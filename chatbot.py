@@ -326,7 +326,7 @@ class LaundryFSM:
                     estimasi_jam=estimasi_jam
                 )
                 
-                msg = f"Berhasil membuat pesanan!\nKode Pesanan: {kode_pesanan}\nEstimasi selesai: {estimasi}\n\nTerima kasih telah menggunakan CleanWash Laundry."
+                msg = f"Berhasil membuat pesanan!\nKode Pesanan: {kode_pesanan}\nEstimasi selesai: {estimasi}\n\nTerima kasih telah menggunakan Astroclean Laundry."
                 # Reset FSM behind the scenes but we wait for next input to show menu, or just show it now
                 msg += "\n\nKetik apapun untuk kembali ke menu utama."
                 self.reset_fsm()
@@ -342,7 +342,7 @@ class LaundryFSM:
     # --- HELPER MESSAGES ---
 
     def _msg_start(self):
-        return "Selamat datang di CleanWash Laundry\nSaya dapat membantu Anda:\n1. Buat Pesanan Laundry\n2. Cek Status Pesanan\n3. Informasi Layanan\n4. Informasi Member\n5. Keluhan Pelanggan"
+        return "Selamat datang di Astroclean Laundry\nSaya dapat membantu Anda:\n1. Buat Pesanan Laundry\n2. Cek Status Pesanan\n3. Informasi Layanan\n4. Informasi Member\n5. Keluhan Pelanggan"
 
     def _msg_pilih_laundry(self):
         return "Jenis laundry yang ingin Anda pesan:\n1. Laundry Pakaian\n2. Laundry Sepatu"
@@ -366,7 +366,7 @@ class LaundryFSM:
         return "Pilih Metode Pembayaran:\n1. Qris\n2. Bayar di Tempat\n3. Bayar Setelah Jadi"
         
     def _msg_info_member(self):
-        msg = "✨ Keuntungan Menjadi Member CleanWash ✨\n"
+        msg = "✨ Keuntungan Menjadi Member Astroclean ✨\n"
         msg += "✓ Diskon 5% untuk setiap transaksi\n"
         msg += "✓ Promo bulanan eksklusif\n"
         msg += "✓ Prioritas layanan pengerjaan\n\n"
@@ -385,7 +385,7 @@ class LaundryFSM:
         return msg
 
     def _msg_info_layanan_menu(self):
-        msg = "Berikut adalah informasi layanan CleanWash Laundry. Silakan pilih informasi yang ingin Anda ketahui:\n"
+        msg = "Berikut adalah informasi layanan Astroclean Laundry. Silakan pilih informasi yang ingin Anda ketahui:\n"
         msg += "1. Daftar Harga & Layanan Pakaian 👕\n"
         msg += "2. Daftar Harga & Layanan Sepatu 👟\n"
         msg += "3. Estimasi Waktu Pengerjaan ⏱️\n"
