@@ -45,7 +45,7 @@ class LaundryFSM:
                 return self._msg_pilih_laundry()
             elif user_input == '2':
                 self.state = 'q_CEK_PESANAN'
-                return "Silakan masukkan ID Pesanan Anda (contoh: ORD-1234):"
+                return "🔍 **Cek Status Pesanan**\n\nSilakan masukkan ID Pesanan Anda (contoh: **ORD-1234**):"
             elif user_input == '3':
                 self.state = 'q_INFO_LAYANAN_MENU'
                 return self._msg_info_layanan_menu()
@@ -56,22 +56,22 @@ class LaundryFSM:
                 self.state = 'q_KATEGORI_KELUHAN'
                 return self._msg_kategori_keluhan()
             else:
-                return "Input tidak valid. Silakan pilih angka 1-5.\n\n" + self._msg_start()
+                return "⚠️ **Pilihan tidak valid.** Silakan masukkan angka **1 sampai 5** sesuai menu:\n\n" + self._msg_start()
 
         elif current_state == 'q_CEK_PESANAN':
             pesanan = get_pesanan(user_input)
             if pesanan:
-                msg = f"Data Pesanan ditemukan!\n\n"
-                msg += f"ID Pesanan: {user_input}\n"
-                msg += f"Jenis: {pesanan['Jenis']} - {pesanan['Layanan']}\n"
-                msg += f"Total: Rp {pesanan['Total']:,}\n"
-                msg += f"Status saat ini: {pesanan['Status']}\n\n"
-                msg += "Ketik apapun untuk kembali ke menu utama."
+                msg = f"✅ **Data Pesanan Ditemukan!**\n\n"
+                msg += f"🆔 **ID Pesanan:** {user_input}\n"
+                msg += f"🧺 **Jenis Layanan:** {pesanan['Jenis']} - {pesanan['Layanan']}\n"
+                msg += f"💰 **Total Bayar:** Rp {pesanan['Total']:,}\n"
+                msg += f"⚙️ **Status Saat Ini:** **{pesanan['Status']}**\n\n"
+                msg += "Ketik apapun untuk kembali ke menu utama. 🏠"
                 self.reset_fsm()
                 return msg
             else:
-                msg = "Nomor pesanan salah atau Anda belum melakukan pemesanan.\n\n"
-                msg += "Ketik apapun untuk kembali ke menu utama."
+                msg = "❌ **Nomor pesanan salah atau tidak ditemukan.**\n\n"
+                msg += "Silakan cek kembali kode pesanan Anda. Ketik apapun untuk kembali ke menu utama. 🏠"
                 self.reset_fsm()
                 return msg
 
@@ -85,19 +85,20 @@ class LaundryFSM:
                 self.state = 'q_JENIS_SEPATU'
                 return self._msg_jenis_sepatu()
             else:
-                return "Input tidak valid. Silakan pilih 1 atau 2.\n\n" + self._msg_pilih_laundry()
+                return "⚠️ **Pilihan tidak valid.** Silakan pilih **1** atau **2**:\n\n" + self._msg_pilih_laundry()
 
         # --- ALUR PAKAIAN ---
         elif current_state == 'q_LAYANAN_PAKAIAN':
             if user_input in LAYANAN_PAKAIAN_MAP:
                 self.order_data['layanan'] = LAYANAN_PAKAIAN_MAP[user_input]
                 self.state = 'q_INPUT_PAKAIAN'
-                msg = "Masukkan jumlah item yang akan dicuci (pisahkan dengan koma):\n"
-                msg += "1. Jumlah Kaos\n2. Jumlah Kemeja\n3. Jumlah Celana\n4. Jumlah Jaket Hoodie\n5. Jumlah Selimut\n\n"
-                msg += "Contoh ketik: 2,1,0,1,0"
+                msg = "📊 **Masukkan Jumlah Item Pakaian**\n"
+                msg += "Silakan masukkan jumlah masing-masing item (pisahkan dengan koma):\n"
+                msg += "1. Jumlah Kaos 👕\n2. Jumlah Kemeja 👔\n3. Jumlah Celana 👖\n4. Jumlah Jaket Hoodie 🧥\n5. Jumlah Selimut 🛏️\n\n"
+                msg += "👉 *Contoh format penulisan (2 Kaos, 1 Kemeja, 0 Celana, 1 Jaket, 0 Selimut):* **2,1,0,1,0**"
                 return msg
             else:
-                return "Input tidak valid.\n\n" + self._msg_layanan_pakaian()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_layanan_pakaian()
 
         elif current_state == 'q_INPUT_PAKAIAN':
             import re
@@ -112,7 +113,7 @@ class LaundryFSM:
                 self.state = 'q_CONFIRM_PESANAN_PAKAIAN'
                 return self._msg_ringkasan_pakaian()
             else:
-                return "Format tidak valid. Mohon masukkan tepat 5 angka dipisahkan koma.\nContoh: 2,1,0,1,0"
+                return "⚠️ **Format input tidak valid.** Mohon masukkan tepat 5 angka dipisahkan dengan koma.\nContoh: **2,1,0,1,0**"
 
         elif current_state == 'q_CONFIRM_PESANAN_PAKAIAN':
             if user_input == '1':
@@ -124,7 +125,7 @@ class LaundryFSM:
                 self.order_data['items_pakaian'] = {k: 0 for k in self.order_data['items_pakaian']}
                 return self._msg_layanan_pakaian()
             else:
-                return "Input tidak valid.\n\nApakah pesanan sudah benar?\n1. Ya\n2. Ulangi"
+                return "⚠️ **Pilihan tidak valid.**\n\nApakah rincian pesanan sudah benar?\n1️⃣ Ya, sudah benar ✅\n2️⃣ Tidak, ulangi input 🔄"
 
         # --- ALUR SEPATU ---
         elif current_state == 'q_JENIS_SEPATU':
@@ -134,7 +135,7 @@ class LaundryFSM:
                 self.state = 'q_LAYANAN_SEPATU'
                 return self._msg_layanan_sepatu()
             else:
-                return "Input tidak valid.\n\n" + self._msg_jenis_sepatu()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_jenis_sepatu()
 
         elif current_state == 'q_LAYANAN_SEPATU':
             if user_input in LAYANAN_SEPATU_MAP:
@@ -142,21 +143,25 @@ class LaundryFSM:
                 self._hitung_total_sepatu()
                 # Langsung ke Tanya Member setelah memilih layanan sepatu
                 self.state = 'q_TANYA_MEMBER'
-                msg = f"Pesanan: {self.order_data['jenis_sepatu']} - {self.order_data['layanan']}\nTotal: Rp {self.order_data['total_harga']:,}\n\n"
+                msg = f"📋 **Ringkasan Pesanan Sepatu**\n"
+                msg += f"• 👟 Jenis Sepatu: {self.order_data['jenis_sepatu']}\n"
+                msg += f"• 🧼 Layanan: {self.order_data['layanan']}\n"
+                msg += f"━━━━━━━━━━━━━━━━━━━━\n"
+                msg += f"💰 **Total Harga:** **Rp {self.order_data['total_harga']:,}**\n\n"
                 return msg + self._msg_tanya_member()
             else:
-                return "Input tidak valid.\n\n" + self._msg_layanan_sepatu()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_layanan_sepatu()
 
         # --- ALUR MEMBER ---
         elif current_state == 'q_TANYA_MEMBER':
             if user_input == '1':
                 self.state = 'q_INPUT_ID_MEMBER'
-                return "Masukan Nomor Member: "
+                return "💳 **Validasi Member**\n\nSilakan masukkan **ID Member** Anda (contoh: **MBR-123**):"
             elif user_input == '2':
                 self.state = 'q_TAWARKAN_MEMBER'
                 return self._msg_tawarkan_member()
             else:
-                return "Input tidak valid.\n\n" + self._msg_tanya_member()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_tanya_member()
         
         elif current_state == 'q_INPUT_ID_MEMBER':
             member = get_member(user_input)
@@ -165,23 +170,24 @@ class LaundryFSM:
                 self.order_data['member_id'] = user_input
                 self._apply_discount()
                 self.state = 'q_LANJUT_PESANAN'
-                return f"Member ditemukan ({member['Nama']}).\nDiskon 5% diterapkan.\nTotal setelah diskon: Rp {self.order_data['total_harga']:,}\n\nLanjut Pesanan :\n1. Iya\n2. Tidak"
+                return f"✅ **Member ditemukan ({member['Nama']})**.\n🎉 Diskon member 5% berhasil diterapkan!\n💰 **Total setelah diskon:** **Rp {self.order_data['total_harga']:,}**\n\nLanjut ke pembayaran?\n1️⃣ Ya, lanjut ke pembayaran ✅\n2️⃣ Tidak, batalkan pesanan ❌"
             else:
                 self.state = 'q_TANYA_MEMBER'
-                return "Nomor Member tidak ditemukan.\n\n" + self._msg_tanya_member()
+                return "❌ **ID Member tidak ditemukan.**\n\n" + self._msg_tanya_member()
 
         elif current_state == 'q_TAWARKAN_MEMBER':
             if user_input == '1':
                 self.state = 'q_DAFTAR_MEMBER'
-                msg = "Isi form pendaftaran member (pisahkan dengan koma):\n"
-                msg += "Nama Lengkap, Nomor WhatsApp, Alamat\n\n"
-                msg += "Contoh ketik: Budi Santoso, 08123456789, Jl. Merdeka No. 10"
+                msg = "📝 **Formulir Pendaftaran Member**\n"
+                msg += "Silakan isi data diri Anda (pisahkan dengan koma):\n"
+                msg += "Nama Lengkap, Nomor WhatsApp, Alamat Lengkap\n\n"
+                msg += "👉 *Contoh ketik:* **Budi Santoso, 08123456789, Jl. Merdeka No. 10**"
                 return msg
             elif user_input == '2':
                 self.state = 'q_METODE_PEMBAYARAN'
                 return self._msg_pilih_pembayaran()
             else:
-                return "Input tidak valid.\n\nApakah ingin mendaftar member?\n1. Ya\n2. Tidak"
+                return "⚠️ **Pilihan tidak valid.**\n\nApakah Anda ingin mendaftar member?\n1️⃣ Ya, daftar member baru 📝\n2️⃣ Tidak, lanjut tanpa member ➡️"
 
         elif current_state == 'q_DAFTAR_MEMBER':
             parts = [p.strip() for p in user_input.split(',')]
@@ -199,23 +205,24 @@ class LaundryFSM:
                 self._apply_discount()
                 
                 self.state = 'q_METODE_PEMBAYARAN'
-                msg = f"Selamat member anda sudah jadi. ID Anda: {new_id}\nDiskon 5% diterapkan. Total: Rp {self.order_data['total_harga']:,}\n\n"
+                msg = f"🎉 **Selamat! Pendaftaran member berhasil.**\n🆔 **ID Member Anda:** **{new_id}**\n🎉 Diskon 5% berhasil diterapkan!\n💰 **Total setelah diskon:** **Rp {self.order_data['total_harga']:,}**\n\n"
                 return msg + self._msg_pilih_pembayaran()
             else:
-                return "Format tidak valid. Mohon masukkan tepat 3 data dipisahkan koma.\nContoh: Budi Santoso, 08123456789, Jl. Merdeka No. 10"
+                return "⚠️ **Format input tidak valid.** Mohon masukkan tepat 3 data dipisahkan dengan koma.\nContoh: **Budi Santoso, 08123456789, Jl. Merdeka No. 10**"
 
         elif current_state == 'q_INFO_MEMBER':
             if user_input == '1':
                 self.state = 'q_DAFTAR_MEMBER_BARU'
-                msg = "Isi form pendaftaran member (pisahkan dengan koma):\n"
-                msg += "Nama Lengkap, Nomor WhatsApp, Alamat\n\n"
-                msg += "Contoh ketik: Budi Santoso, 08123456789, Jl. Merdeka No. 10"
+                msg = "📝 **Formulir Pendaftaran Member Baru**\n"
+                msg += "Silakan isi data diri Anda (pisahkan dengan koma):\n"
+                msg += "Nama Lengkap, Nomor WhatsApp, Alamat Lengkap\n\n"
+                msg += "👉 *Contoh ketik:* **Budi Santoso, 08123456789, Jl. Merdeka No. 10**"
                 return msg
             elif user_input == '2':
                 self.reset_fsm()
-                return "Kembali ke menu utama.\n\n" + self._msg_start()
+                return "Kembali ke menu utama. 🏠\n\n" + self._msg_start()
             else:
-                return "Input tidak valid.\n\n" + self._msg_info_member()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_info_member()
 
         elif current_state == 'q_DAFTAR_MEMBER_BARU':
             parts = [p.strip() for p in user_input.split(',')]
@@ -224,14 +231,14 @@ class LaundryFSM:
                 new_id = f"MBR-{random.randint(100, 999)}"
                 add_member(new_id, nama, whatsapp, alamat)
                 
-                msg = f"🎉 Selamat! Pendaftaran member berhasil.\n"
-                msg += f"ID Member Anda: {new_id}\n"
-                msg += "Silakan simpan ID Member ini untuk digunakan saat memesan laundry.\n\n"
-                msg += "Ketik apapun untuk kembali ke menu utama."
+                msg = f"🎉 **Selamat! Pendaftaran member berhasil.**\n"
+                msg += f"🆔 **ID Member Anda:** **{new_id}**\n"
+                msg += "Silakan simpan ID Member ini untuk digunakan saat memesan laundry. 😉\n\n"
+                msg += "Ketik apapun untuk kembali ke menu utama. 🏠"
                 self.reset_fsm()
                 return msg
             else:
-                return "Format tidak valid. Mohon masukkan tepat 3 data dipisahkan koma.\nContoh: Budi Santoso, 08123456789, Jl. Merdeka No. 10"
+                return "⚠️ **Format input tidak valid.** Mohon masukkan tepat 3 data dipisahkan dengan koma.\nContoh: **Budi Santoso, 08123456789, Jl. Merdeka No. 10**"
 
         # --- ALUR INFORMASI LAYANAN ---
         elif current_state == 'q_INFO_LAYANAN_MENU':
@@ -252,9 +259,9 @@ class LaundryFSM:
                 return self._msg_info_snk() + "\n\nKetik apapun untuk kembali ke Menu Informasi Layanan."
             elif user_input == '0':
                 self.reset_fsm()
-                return "Kembali ke menu utama.\n\n" + self._msg_start()
+                return "Kembali ke menu utama. 🏠\n\n" + self._msg_start()
             else:
-                return "Input tidak valid. Silakan pilih 0-5.\n\n" + self._msg_info_layanan_menu()
+                return "⚠️ **Pilihan tidak valid.** Silakan pilih angka **0 sampai 5**:\n\n" + self._msg_info_layanan_menu()
 
         elif current_state == 'q_INFO_LAYANAN_DETAIL':
             self.state = 'q_INFO_LAYANAN_MENU'
@@ -266,9 +273,9 @@ class LaundryFSM:
             if user_input in kategori_map:
                 self.order_data['keluhan']['kategori'] = kategori_map[user_input]
                 self.state = 'q_ID_PESANAN_KELUHAN'
-                return "Silakan masukkan ID Pesanan Anda jika ada (contoh: ORD-1234), atau ketik '0' jika Anda tidak mengingatnya atau tidak ada:"
+                return "🔍 **Validasi ID Pesanan**\n\nSilakan masukkan **ID Pesanan** Anda jika ada (contoh: **ORD-1234**).\n\nKetik **0** jika Anda lupa atau tidak memiliki ID Pesanan:"
             else:
-                return "Input tidak valid.\n\n" + self._msg_kategori_keluhan()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_kategori_keluhan()
 
         elif current_state == 'q_ID_PESANAN_KELUHAN':
             if user_input != '0':
@@ -277,7 +284,7 @@ class LaundryFSM:
                 self.order_data['keluhan']['id_pesanan'] = 'Tidak ada/Lupa'
             
             self.state = 'q_ISI_KELUHAN'
-            return "Silakan ceritakan detail keluhan Anda secara lengkap. Kami siap mendengarkan dan memperbaikinya:"
+            return "💬 **Detail Keluhan**\n\nSilakan ceritakan rincian keluhan atau kendala yang Anda alami secara detail. Kami siap mendengarkan dan menindaklanjutinya:"
 
         elif current_state == 'q_ISI_KELUHAN':
             self.order_data['keluhan']['isi'] = user_input
@@ -288,9 +295,10 @@ class LaundryFSM:
             
             add_keluhan(ticket_id, kategori, id_pesanan, user_input)
             
-            msg = f"🙏 Terima kasih atas masukan Anda. Keluhan Anda telah kami terima dengan nomor tiket: {ticket_id}\n\n"
-            msg += "Tim kami akan segera menindaklanjuti laporan Anda secepatnya. Mohon maaf atas ketidaknyamanan yang terjadi.\n\n"
-            msg += "Ketik apapun untuk kembali ke menu utama."
+            msg = f"🙏 **Terima kasih atas laporan Anda.**\n"
+            msg += f"🎟️ **Nomor Tiket Keluhan:** **{ticket_id}**\n\n"
+            msg += "Tim customer service kami akan segera menindaklanjuti keluhan Anda. Kami memohon maaf yang sebesar-besarnya atas ketidaknyamanan ini. 🙏\n\n"
+            msg += "Ketik apapun untuk kembali ke menu utama. 🏠"
             
             self.reset_fsm()
             return msg
@@ -302,9 +310,9 @@ class LaundryFSM:
                 return self._msg_pilih_pembayaran()
             elif user_input == '2':
                 self.reset_fsm()
-                return "Pesanan dibatalkan.\n\n" + self._msg_start()
+                return "❌ **Pesanan dibatalkan.**\n\n" + self._msg_start()
             else:
-                return "Input tidak valid.\nLanjut Pesanan :\n1. Iya\n2. Tidak"
+                return "⚠️ **Pilihan tidak valid.**\n\nLanjut ke pembayaran?\n1️⃣ Ya, lanjut ke pembayaran ✅\n2️⃣ Tidak, batalkan pesanan ❌"
 
         elif current_state == 'q_METODE_PEMBAYARAN':
             metode_map = {'1': 'Qris', '2': 'Bayar di Tempat', '3': 'Bayar Setelah Jadi'}
@@ -323,65 +331,116 @@ class LaundryFSM:
                     layanan=self.order_data['layanan'],
                     jenis=self.order_data['jenis_laundry'],
                     total=self.order_data['total_harga'],
-                    estimasi_jam=estimasi_jam
+                    estimasi_jam=estimasi_jam,
+                    metode_pembayaran=self.order_data['metode_pembayaran']
                 )
                 
-                msg = f"Berhasil membuat pesanan!\nKode Pesanan: {kode_pesanan}\nEstimasi selesai: {estimasi}\n\nTerima kasih telah menggunakan Astroclean Laundry."
-                # Reset FSM behind the scenes but we wait for next input to show menu, or just show it now
-                msg += "\n\nKetik apapun untuk kembali ke menu utama."
+                msg = f"🎉 **Pesanan Berhasil Dibuat & Tersimpan!**\n\n"
+                msg += f"🆔 **Kode Pesanan:** `{kode_pesanan}`\n"
+                msg += f"⏱️ **Estimasi Selesai:** {estimasi}\n"
+                msg += f"💳 **Metode Bayar:** {self.order_data['metode_pembayaran']}\n\n"
+                msg += "━━━━━━━━━━━━━━━━━━━━\n"
+                msg += "📋 Pesanan Anda sudah **otomatis tersimpan** di sistem kami.\n"
+                msg += "👉 Pantau status laundry Anda kapan saja melalui menu **Cek Pesanan** di navbar.\n\n"
+                msg += "Terima kasih telah mempercayakan laundry Anda kepada **Astroclean**! 😊\n"
+                msg += "Ketik apapun untuk kembali ke menu utama. 🏠"
                 self.reset_fsm()
                 return msg
             else:
-                return "Input tidak valid.\n\n" + self._msg_pilih_pembayaran()
+                return "⚠️ **Pilihan tidak valid.**\n\n" + self._msg_pilih_pembayaran()
                 
         else:
             # Fallback (Safety)
             self.reset_fsm()
-            return "Terjadi kesalahan state. Memulai ulang...\n\n" + self._msg_start()
+            return "⚠️ **Terjadi kesalahan state.** Memulai ulang...\n\n" + self._msg_start()
 
     # --- HELPER MESSAGES ---
 
     def _msg_start(self):
-        return "Selamat datang di Astroclean Laundry\nSaya dapat membantu Anda:\n1. Buat Pesanan Laundry\n2. Cek Status Pesanan\n3. Informasi Layanan\n4. Informasi Member\n5. Keluhan Pelanggan"
+        msg = "🤖 **Halo! Selamat datang di Astroclean Laundry**\n"
+        msg += "Saya dapat membantu Anda. Silakan pilih layanan kami:\n\n"
+        msg += "1️⃣ Buat Pesanan Laundry 🧺\n"
+        msg += "2️⃣ Cek Status Pesanan 🔍\n"
+        msg += "3️⃣ Informasi Layanan 📋\n"
+        msg += "4️⃣ Informasi Member 💳\n"
+        msg += "5️⃣ Keluhan Pelanggan 💬"
+        return msg
 
     def _msg_pilih_laundry(self):
-        return "Jenis laundry yang ingin Anda pesan:\n1. Laundry Pakaian\n2. Laundry Sepatu"
+        msg = "👕 **Pilih Jenis Laundry**\n"
+        msg += "Silakan pilih kategori laundry yang ingin Anda pesan:\n\n"
+        msg += "1️⃣ Laundry Pakaian 🧺\n"
+        msg += "2️⃣ Laundry Sepatu 👟"
+        return msg
 
     def _msg_layanan_pakaian(self):
-        return "Jenis layanan yang Anda inginkan:\n1. Reguler (3-4 Hari)\n2. Express (1 Hari)\n3. Same Day (8 jam)"
+        msg = "⚡ **Pilih Layanan Pakaian**\n"
+        msg += "Silakan pilih kecepatan pengerjaan pakaian Anda:\n\n"
+        msg += "1️⃣ Reguler (3-4 Hari) ⏱️\n"
+        msg += "2️⃣ Express (1 Hari) ⚡\n"
+        msg += "3️⃣ Same Day (8 jam) 🚀"
+        return msg
 
     def _msg_jenis_sepatu(self):
-        return "Jenis sepatu yang akan dicuci:\n1. Sneakers\n2. Running\n3. Canvas\n4. Kulit\nSilakan pilih:"
+        msg = "👟 **Pilih Jenis Sepatu**\n"
+        msg += "Silakan pilih jenis bahan sepatu Anda:\n\n"
+        msg += "1️⃣ Sneakers 👟\n"
+        msg += "2️⃣ Running 🏃\n"
+        msg += "3️⃣ Canvas 👟\n"
+        msg += "4️⃣ Kulit (Leather) 👞"
+        return msg
     
     def _msg_layanan_sepatu(self):
-        return "Pilih layanan:\n1. Fast Clean (2 Hari)\n2. Deep Clean (2 Hari)\nSilakan pilih:"
+        msg = "🧼 **Pilih Layanan Sepatu**\n"
+        msg += "Silakan pilih jenis perawatan sepatu Anda:\n\n"
+        msg += "1️⃣ Fast Clean (2 Hari) ⚡\n"
+        msg += "2️⃣ Deep Clean (2 Hari) ✨"
+        return msg
         
     def _msg_tanya_member(self):
-        return "Apakah Anda sudah menjadi member?\n1. Ya\n2. Belum"
+        msg = "👤 **Status Member**\n"
+        msg += "Apakah Anda sudah terdaftar sebagai member Astroclean?\n\n"
+        msg += "1️⃣ Ya, saya punya ID Member ✅\n"
+        msg += "2️⃣ Belum / Tidak punya ❌"
+        return msg
 
     def _msg_tawarkan_member(self):
-        return "Apakah Ingin Mendaftar Sebagai Member?, Keuntunganya menarik lohh :\n✓ Diskon 5%\n✓ Promo bulanan\n✓ Prioritas layanan\nApakah ingin mendaftar member?\n1. Ya\n2. Tidak"
+        msg = "🌟 **Penawaran Spesial Member** 🌟\n"
+        msg += "Ingin bergabung menjadi member Astroclean? Dapatkan berbagai keuntungan menarik:\n"
+        msg += "💸 **Diskon 5%** untuk setiap transaksi\n"
+        msg += "📅 **Promo bulanan** eksklusif\n"
+        msg += "⭐ **Prioritas layanan** pengerjaan\n\n"
+        msg += "Apakah Anda ingin mendaftar sekarang?\n"
+        msg += "1️⃣ Ya, saya mau daftar! 📝\n"
+        msg += "2️⃣ Tidak, lanjut tanpa member ➡️"
+        return msg
 
     def _msg_pilih_pembayaran(self):
-        return "Pilih Metode Pembayaran:\n1. Qris\n2. Bayar di Tempat\n3. Bayar Setelah Jadi"
+        msg = "💳 **Pilih Metode Pembayaran**\n"
+        msg += "Silakan pilih metode pembayaran yang Anda inginkan:\n\n"
+        msg += "1️⃣ QRIS (Otomatis & Cashless) 📱\n"
+        msg += "2️⃣ Bayar di Tempat / COD (Saat antar/jemput) 💵\n"
+        msg += "3️⃣ Bayar Setelah Jadi (Di outlet) 💳"
+        return msg
         
     def _msg_info_member(self):
-        msg = "✨ Keuntungan Menjadi Member Astroclean ✨\n"
-        msg += "✓ Diskon 5% untuk setiap transaksi\n"
-        msg += "✓ Promo bulanan eksklusif\n"
-        msg += "✓ Prioritas layanan pengerjaan\n\n"
-        msg += "Apakah Anda ingin mendaftar sebagai member sekarang?\n"
-        msg += "1. Ya, daftar member\n"
-        msg += "2. Kembali ke menu utama"
+        msg = "✨ **Keuntungan Menjadi Member Astroclean** ✨\n\n"
+        msg += "💸 **Diskon 5%** untuk setiap kali Anda laundry\n"
+        msg += "📅 **Promo bulanan** eksklusif yang dikirim lewat WA\n"
+        msg += "⭐ **Prioritas layanan** pengerjaan dibanding non-member\n\n"
+        msg += "Apakah Anda ingin mendaftar sebagai member baru sekarang?\n"
+        msg += "1️⃣ Ya, daftar member baru 📝\n"
+        msg += "2️⃣ Kembali ke menu utama 🏠"
         return msg
 
     def _msg_kategori_keluhan(self):
-        msg = "Kami mohon maaf atas ketidaknyamanan Anda. Silakan pilih kategori keluhan:\n"
-        msg += "1. Keterlambatan Layanan\n"
-        msg += "2. Hasil Cucian Kurang Bersih/Rusak\n"
-        msg += "3. Pelayanan Karyawan\n"
-        msg += "4. Lainnya\n\n"
-        msg += "Ketik angka pilihan Anda:"
+        msg = "🙏 **Layanan Pengaduan & Keluhan**\n"
+        msg += "Kami memohon maaf atas ketidaknyamanan Anda. Silakan pilih kategori kendala Anda:\n\n"
+        msg += "1️⃣ Keterlambatan Layanan ⏰\n"
+        msg += "2️⃣ Hasil Cucian Kurang Bersih / Rusak 🧺\n"
+        msg += "3️⃣ Pelayanan Karyawan / Staff 👤\n"
+        msg += "4️⃣ Masalah Lainnya ❓\n\n"
+        msg += "Ketik angka pilihan Anda (1-4):"
         return msg
 
     def _msg_info_layanan_menu(self):
@@ -458,14 +517,17 @@ class LaundryFSM:
 
     def _msg_ringkasan_pakaian(self):
         items = self.order_data['items_pakaian']
-        msg = "Ringkasan Pesanan:\n"
-        msg += f"Kaos    : {items['Kaos']}\n"
-        msg += f"Kemeja  : {items['Kemeja']}\n"
-        msg += f"Celana  : {items['Celana']}\n"
-        msg += f"Jaket   : {items['Jaket Hoodie']}\n"
-        msg += f"Selimut : {items['Selimut']}\n"
-        msg += f"Total: Rp {self.order_data['total_harga']:,}\n\n"
-        msg += "Apakah pesanan sudah benar?\n1. Ya\n2. Ulangi"
+        msg = "📋 **Ringkasan Pesanan Pakaian**\n"
+        msg += f"• 👕 Kaos    : {items['Kaos']} pcs\n"
+        msg += f"• 👔 Kemeja  : {items['Kemeja']} pcs\n"
+        msg += f"• 👖 Celana  : {items['Celana']} pcs\n"
+        msg += f"• 🧥 Jaket   : {items['Jaket Hoodie']} pcs\n"
+        msg += f"• 🛏️ Selimut : {items['Selimut']} pcs\n"
+        msg += f"━━━━━━━━━━━━━━━━━━━━\n"
+        msg += f"💰 **Total Harga:** **Rp {self.order_data['total_harga']:,}**\n\n"
+        msg += "Apakah rincian pesanan di atas sudah benar?\n"
+        msg += "1️⃣ Ya, sudah benar ✅\n"
+        msg += "2️⃣ Tidak, ulangi input 🔄"
         return msg
 
     def _get_estimasi(self):

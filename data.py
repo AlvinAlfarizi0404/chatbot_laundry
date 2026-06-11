@@ -79,9 +79,21 @@ def init_db():
             status TEXT,
             layanan TEXT,
             jenis TEXT,
-            total INTEGER
+            total INTEGER,
+            metode_pembayaran TEXT DEFAULT 'Tidak Diketahui',
+            status_pembayaran TEXT DEFAULT 'Belum Dibayar'
         )
     ''')
+    # Migrasi kolom untuk DB lama
+    for kolom, default in [
+        ("metode_pembayaran", "'Tidak Diketahui'"),
+        ("status_pembayaran", "'Belum Dibayar'"),
+    ]:
+        try:
+            c.execute(f"ALTER TABLE pesanan ADD COLUMN {kolom} TEXT DEFAULT {default}")
+            conn.commit()
+        except Exception:
+            pass  # Kolom sudah ada, abaikan
     c.execute('''
         CREATE TABLE IF NOT EXISTS member (
             id_member TEXT PRIMARY KEY,
@@ -129,17 +141,51 @@ def add_keluhan(id_keluhan, kategori, id_pesanan, isi_keluhan):
     conn.commit()
     conn.close()
 
-def add_pesanan(id_pesanan, layanan, jenis, total, estimasi_jam):
+def add_pesanan(id_pesanan, layanan, jenis, total, estimasi_jam, metode_pembayaran='Tidak Diketahui'):
     conn = get_db_connection()
     c = conn.cursor()
     waktu_pesan = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     status = 'Sedang Dicuci'
+    # QRIS = langsung lunas, metode lain = belum dibayar
+    status_pembayaran = 'Sudah Dibayar' if metode_pembayaran == 'Qris' else 'Belum Dibayar'
     c.execute('''
-        INSERT INTO pesanan (id_pesanan, waktu_pesan, estimasi_jam, status, layanan, jenis, total)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (id_pesanan, waktu_pesan, estimasi_jam, status, layanan, jenis, total))
+        INSERT INTO pesanan (id_pesanan, waktu_pesan, estimasi_jam, status, layanan, jenis, total, metode_pembayaran, status_pembayaran)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (id_pesanan, waktu_pesan, estimasi_jam, status, layanan, jenis, total, metode_pembayaran, status_pembayaran))
     conn.commit()
     conn.close()
+
+def get_all_pesanan():
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute('SELECT * FROM pesanan ORDER BY waktu_pesan DESC')
+    rows = c.fetchall()
+
+    result = []
+    for row in rows:
+        pesanan = dict(row)
+        # Auto-update status pengerjaan jika sudah melewati estimasi
+        if pesanan['status'] != 'Selesai':
+            waktu_pesan = datetime.strptime(pesanan['waktu_pesan'], '%Y-%m-%d %H:%M:%S')
+            estimasi_selesai = waktu_pesan + timedelta(hours=pesanan['estimasi_jam'])
+            if datetime.now() >= estimasi_selesai:
+                c.execute('UPDATE pesanan SET status = ? WHERE id_pesanan = ?', ('Selesai', pesanan['id_pesanan']))
+                conn.commit()
+                pesanan['status'] = 'Selesai'
+
+        result.append({
+            'ID': pesanan['id_pesanan'],
+            'Waktu': pesanan['waktu_pesan'],
+            'Jenis': pesanan['jenis'],
+            'Layanan': pesanan['layanan'],
+            'Total': pesanan['total'],
+            'Status': pesanan['status'],
+            'MetodePembayaran': pesanan.get('metode_pembayaran') or 'Tidak Diketahui',
+            'StatusPembayaran': pesanan.get('status_pembayaran') or 'Belum Dibayar',
+        })
+
+    conn.close()
+    return result
 
 def get_pesanan(id_pesanan):
     conn = get_db_connection()

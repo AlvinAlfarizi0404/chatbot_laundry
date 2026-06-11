@@ -1,6 +1,6 @@
 import streamlit as st
 from chatbot import LaundryFSM
-from data import init_db
+from data import init_db, get_all_pesanan
 
 init_db()
 
@@ -31,6 +31,10 @@ def show_landing_page():
         st.query_params.clear()
         st.session_state.page = 'chatbot'
         st.rerun()
+    if st.query_params.get('go') == 'cek_pesanan':
+        st.query_params.clear()
+        st.session_state.page = 'cek_pesanan'
+        st.rerun()
 
     # Sembunyikan chrome Streamlit
     st.html("""
@@ -53,8 +57,10 @@ def show_landing_page():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
         <style>
+            @import url('https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
             * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
             html { scroll-behavior:smooth; }
             body { overflow-x:hidden; }
@@ -237,9 +243,10 @@ def show_landing_page():
             <li><a href="#hero">Beranda</a></li>
             <li><a href="#features">Layanan</a></li>
             <li><a href="#contact">Kontak</a></li>
+            <li><a href="?go=cek_pesanan" target="_self" style="display:inline-flex;align-items:center;gap:5px;"><i class='bx bx-list-check' style='font-size:1.05rem;'></i> Cek Pesanan</a></li>
         </ul>
         <a href="?go=chat" target="_self" class="lp-btn-nav">
-            Coba Chatbot
+            <i class='bx bx-message-square-dots' style='vertical-align:middle;margin-right:6px;'></i> Coba Chatbot
         </a>
     </nav>
 
@@ -247,13 +254,13 @@ def show_landing_page():
     <section id="hero" class="lp-hero">
         <div class="lp-hero-content">
             <span class="lp-badge"><i class='bx bx-trending-up'></i> Inovasi Layanan 2026</span>
-            <h1>Revolusi Layanan Laundry dengan <span class="lp-highlight">AI Chatbot</span></h1>
+            <h1>Revolusi Layanan Laundry dengan <span class="lp-highlight">Chatbot</span></h1>
             <p>Memesan laundry, mengecek status pesanan, dan menyampaikan keluhan kini semudah mengirim pesan. Nikmati pengalaman cerdas bersama Astroclean.</p>
             <div class="lp-hero-btns">
                 <a href="?go=chat" target="_self" class="lp-btn-primary">
                     <i class='bx bx-message-rounded-dots'></i> Mulai Percakapan
                 </a>
-                <a href="#features" class="lp-btn-secondary">Pelajari Lebih Lanjut</a>
+                <a href="#features" class="lp-btn-secondary"><i class='bx bx-info-circle' style='margin-right:6px;'></i> Pelajari Lebih Lanjut</a>
             </div>
         </div>
         <div class="lp-hero-image">
@@ -316,9 +323,9 @@ def show_landing_page():
             <div class="lp-contact-info">
                 <h2>Hubungi Kami</h2>
                 <p>Butuh bantuan lebih lanjut? Kunjungi kami secara langsung.</p>
-                <div class="lp-info-row"><i class='bx bx-map'></i><span>Jl. Bersih Kilau No. 99, Kota Baru</span></div>
+                <div class="lp-info-row"><i class='bx bx-map'></i><span>Jl. Kedungmundu No. 99, Kota Semarang</span></div>
                 <div class="lp-info-row"><i class='bx bx-time'></i><span>Buka Setiap Hari: 08.00 – 21.00 WIB</span></div>
-                <div class="lp-info-row"><i class='bx bxl-whatsapp'></i><span>0812-XXXX-XXXX (Customer Service)</span></div>
+                <div class="lp-info-row"><i class='bx bxl-whatsapp'></i><span>085769171888 (Customer Service)</span></div>
             </div>
             <div class="lp-contact-visual">
                 <div class="lp-blob"></div>
@@ -356,6 +363,10 @@ def show_chatbot_page():
         st.query_params.clear()
         st.session_state.page = 'landing'
         st.rerun()
+    if st.query_params.get('go') == 'cek_pesanan':
+        st.query_params.clear()
+        st.session_state.page = 'cek_pesanan'
+        st.rerun()
 
     # CSS chatbot
     st.html("""
@@ -379,8 +390,10 @@ def show_chatbot_page():
     # Topbar dengan tombol Kembali (JS)
     st.html("""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
+        @import url('https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         .cb-topbar {
             background:rgba(255,255,255,.92); backdrop-filter:blur(14px);
             border-bottom:1px solid rgba(0,0,0,.07);
@@ -410,7 +423,7 @@ def show_chatbot_page():
     </style>
     <div class="cb-topbar">
         <div class="cb-brand">
-            <i class='bx bxs-washer'></i>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><rect width="18" height="20" x="3" y="2" rx="2"/><circle cx="12" cy="13" r="5"/><path d="M12 10a3 3 0 0 0 0 6"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="10" y1="6" x2="10.01" y2="6"/><line x1="14" y1="6" x2="14.01" y2="6"/></svg>
             <span>Astroclean</span>
         </div>
         <div class="cb-right">
@@ -418,8 +431,11 @@ def show_chatbot_page():
                 <div class="cb-dot"></div>
                 Bot Aktif
             </div>
+            <a href="?go=cek_pesanan" target="_self" class="cb-back-btn" style="margin-right:6px;background:rgba(34,197,94,.1);color:#16a34a;border-color:rgba(34,197,94,.25);">
+                <i class='bx bx-list-check' style='font-size:1.1rem;vertical-align:middle;margin-right:2px;'></i> Cek Pesanan
+            </a>
             <a href="?go=landing" target="_self" class="cb-back-btn">
-                ← Beranda
+                <i class='bx bx-left-arrow-alt' style='font-size:1.1rem;vertical-align:middle;margin-right:2px;'></i> Beranda
             </a>
         </div>
     </div>
@@ -430,21 +446,29 @@ def show_chatbot_page():
         content_html = content.replace('\n', '<br>')
         if role == "user":
             st.html(f"""
-            <div style="display:flex;justify-content:flex-end;margin-bottom:14px;padding:0 4px;">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:14px;padding:0 4px;align-items:flex-end;gap:10px;">
                 <div style="background:#0b1a47;color:white;padding:12px 18px;
                     border-radius:20px 20px 0 20px;max-width:75%;
                     font-size:15px;line-height:1.5;font-family:'Inter',sans-serif;
                     box-shadow:0 4px 12px rgba(11,26,71,.18);">
                     {content_html}
                 </div>
+                <div style="background:#e2e8f0;color:#475569;border-radius:50%;
+                    width:38px;height:38px;min-width:38px;
+                    display:flex;align-items:center;justify-content:center;
+                    box-shadow:0 4px 10px rgba(0,0,0,.05);color:#475569;">
+                    <i class='bx bx-user' style='font-size:20px;'></i>
+                </div>
             </div>""")
         else:
             st.html(f"""
             <div style="display:flex;justify-content:flex-start;margin-bottom:14px;padding:0 4px;align-items:flex-end;gap:10px;">
-                <div style="font-size:20px;background:white;border-radius:50%;
+                <div style="background:#2563eb;color:white;border-radius:50%;
                     width:38px;height:38px;min-width:38px;
                     display:flex;align-items:center;justify-content:center;
-                    box-shadow:0 4px 10px rgba(0,0,0,.08);">🤖</div>
+                    box-shadow:0 4px 10px rgba(37,99,235,.2);color:white;">
+                    <i class='bx bx-bot' style='font-size:20px;'></i>
+                </div>
                 <div style="background:white;color:#1e293b;padding:13px 18px;
                     border-radius:20px 20px 20px 0;max-width:75%;
                     font-size:15px;line-height:1.55;font-family:'Inter',sans-serif;
@@ -471,9 +495,341 @@ def show_chatbot_page():
 
 
 # ══════════════════════════════════════════════════════
+# CEK PESANAN PAGE
+# ══════════════════════════════════════════════════════
+def show_cek_pesanan_page():
+    # Deteksi navigasi kembali
+    if st.query_params.get('go') == 'landing':
+        st.query_params.clear()
+        st.session_state.page = 'landing'
+        st.rerun()
+    if st.query_params.get('go') == 'chat':
+        st.query_params.clear()
+        st.session_state.page = 'chatbot'
+        st.rerun()
+
+    st.html("""
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css');
+        [data-testid="stHeader"]  { display:none !important; }
+        [data-testid="stToolbar"] { display:none !important; }
+        .stDeployButton           { display:none !important; }
+        #MainMenu                 { visibility:hidden; }
+        .stApp { background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 55%,#f0f4ff 100%) !important; }
+        .block-container { padding:0 !important; max-width:100% !important; }
+        section[data-testid="stMain"] > div { padding:0 !important; }
+        [data-testid="stHtml"]    { margin:0 !important; padding:0 !important; }
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+
+        .cp-navbar {
+            width:100%; padding:16px 6%;
+            display:flex; justify-content:space-between; align-items:center;
+            background:rgba(255,255,255,.92);
+            backdrop-filter:blur(14px);
+            border-bottom:1px solid rgba(0,0,0,.07);
+            position:sticky; top:0; z-index:100;
+        }
+        .cp-logo {
+            display:flex; align-items:center; gap:10px;
+            font-size:1.35rem; font-weight:700; color:#2563eb;
+            text-decoration:none;
+        }
+        .cp-logo i { font-size:1.6rem; }
+        .cp-nav-actions { display:flex; gap:12px; align-items:center; }
+        .cp-btn {
+            display:inline-flex; align-items:center; gap:6px;
+            text-decoration:none; padding:9px 20px; border-radius:50px;
+            font-weight:600; font-size:.875rem; transition:all .25s;
+        }
+        .cp-btn-outline {
+            color:#2563eb; border:1px solid rgba(37,99,235,.25);
+            background:rgba(37,99,235,.06);
+        }
+        .cp-btn-outline:hover { background:#2563eb; color:white; }
+        .cp-btn-primary {
+            background:#2563eb; color:white;
+            box-shadow:0 4px 14px rgba(37,99,235,.3); border:none;
+        }
+        .cp-btn-primary:hover { background:#1e40af; transform:translateY(-2px); }
+
+        .cp-hero {
+            background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 60%,#f0f4ff 100%);
+            padding:56px 6% 40px;
+            text-align:center;
+        }
+        .cp-hero h1 {
+            font-size:clamp(1.8rem,3vw,2.6rem); font-weight:800;
+            color:#0f172a; margin-bottom:10px;
+        }
+        .cp-hero p { color:#64748b; font-size:1.05rem; }
+        .cp-hero-icon {
+            width:72px; height:72px; border-radius:20px;
+            background:rgba(37,99,235,.12);
+            display:inline-flex; align-items:center; justify-content:center;
+            margin-bottom:20px;
+        }
+        .cp-hero-icon i { font-size:36px; color:#2563eb; }
+
+        .cp-body { padding:40px 6%; max-width:1100px; margin:0 auto; }
+
+        .cp-stats {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:16px; margin-bottom:36px;
+        }
+        .cp-stat-card {
+            background:white; border-radius:16px; padding:20px 22px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 2px 8px rgba(0,0,0,.04);
+            display:flex; align-items:center; gap:14px;
+        }
+        .cp-stat-icon {
+            width:46px; height:46px; border-radius:12px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; flex-shrink:0;
+        }
+        .cp-stat-label { font-size:.8rem; color:#64748b; font-weight:500; margin-bottom:2px; }
+        .cp-stat-value { font-size:1.4rem; font-weight:700; color:#0f172a; }
+
+        .cp-section-title {
+            font-size:1.15rem; font-weight:700; color:#0f172a;
+            margin-bottom:18px; display:flex; align-items:center; gap:8px;
+        }
+
+        .cp-order-card {
+            background:white; border-radius:18px; padding:24px 28px;
+            border:1px solid #e2e8f0; margin-bottom:16px;
+            box-shadow:0 2px 10px rgba(0,0,0,.04);
+            transition:all .3s ease;
+            display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+        }
+        .cp-order-card:hover {
+            box-shadow:0 8px 28px rgba(37,99,235,.1);
+            border-color:rgba(37,99,235,.2);
+            transform:translateY(-2px);
+        }
+        .cp-order-icon {
+            width:52px; height:52px; border-radius:14px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:26px; flex-shrink:0;
+        }
+        .cp-order-info { flex:1; min-width:180px; }
+        .cp-order-id {
+            font-size:1rem; font-weight:700; color:#2563eb; margin-bottom:4px;
+            font-family:'Courier New', monospace; letter-spacing:.5px;
+        }
+        .cp-order-detail { font-size:.88rem; color:#64748b; line-height:1.6; }
+        .cp-order-meta { text-align:right; min-width:130px; }
+        .cp-order-total {
+            font-size:1.1rem; font-weight:700; color:#0f172a; margin-bottom:8px;
+        }
+        .cp-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:5px 14px; border-radius:50px; font-size:.8rem; font-weight:600;
+        }
+        .cp-badge-done {
+            background:rgba(34,197,94,.12); color:#16a34a;
+            border:1px solid rgba(34,197,94,.25);
+        }
+        .cp-badge-process {
+            background:rgba(234,179,8,.12); color:#ca8a04;
+            border:1px solid rgba(234,179,8,.25);
+        }
+        .cp-badge-paid {
+            background:rgba(37,99,235,.1); color:#2563eb;
+            border:1px solid rgba(37,99,235,.22);
+        }
+        .cp-badge-unpaid {
+            background:rgba(239,68,68,.1); color:#dc2626;
+            border:1px solid rgba(239,68,68,.22);
+        }
+        .cp-dot-anim {
+            width:7px; height:7px; border-radius:50%; background:currentColor;
+            animation:cp-blink 1.5s infinite;
+        }
+        @keyframes cp-blink {
+            0%,100% { opacity:1; } 50% { opacity:.3; }
+        }
+
+        .cp-empty {
+            text-align:center; padding:80px 20px;
+            background:white; border-radius:20px; border:1px dashed #cbd5e1;
+        }
+        .cp-empty-icon { font-size:64px; color:#cbd5e1; margin-bottom:16px; }
+        .cp-empty h3 { font-size:1.2rem; font-weight:700; color:#334155; margin-bottom:8px; }
+        .cp-empty p { color:#94a3b8; font-size:.93rem; margin-bottom:24px; }
+        .cp-empty-btn {
+            display:inline-flex; align-items:center; gap:8px;
+            background:#2563eb; color:white;
+            padding:12px 28px; border-radius:50px; font-weight:600;
+            text-decoration:none; font-size:.93rem;
+            box-shadow:0 6px 18px rgba(37,99,235,.3);
+            transition:all .25s;
+        }
+        .cp-empty-btn:hover { background:#1e40af; transform:translateY(-2px); }
+
+        .cp-footer-note {
+            text-align:center; color:#94a3b8; font-size:.82rem;
+            margin-top:32px; padding-top:20px; border-top:1px solid #f1f5f9;
+        }
+    </style>
+    """)
+
+    # Ambil data pesanan
+    semua_pesanan = get_all_pesanan()
+    total_pesanan = len(semua_pesanan)
+    total_selesai = sum(1 for p in semua_pesanan if p['Status'] == 'Selesai')
+    total_proses  = total_pesanan - total_selesai
+    total_bayar   = sum(p['Total'] for p in semua_pesanan)
+
+    # Navbar
+    st.html(f"""
+    <nav class="cp-navbar">
+        <a class="cp-logo" href="?go=landing" target="_self">
+            <i class='bx bxs-washer'></i>
+            <span>Astroclean</span>
+        </a>
+        <div class="cp-nav-actions">
+            <a href="?go=chat" target="_self" class="cp-btn cp-btn-outline">
+                <i class='bx bx-message-square-dots'></i> Chatbot
+            </a>
+            <a href="?go=landing" target="_self" class="cp-btn cp-btn-outline">
+                <i class='bx bx-home'></i> Beranda
+            </a>
+        </div>
+    </nav>
+    """)
+
+    # Hero header
+    st.html("""
+    <div class="cp-hero">
+        <div class="cp-hero-icon"><i class='bx bx-list-check'></i></div>
+        <h1>Riwayat & Status Pesanan</h1>
+        <p>Pantau semua pesanan laundry Anda secara real-time di sini.</p>
+    </div>
+    """)
+
+    # Stats cards
+    st.html(f"""
+    <div class="cp-body">
+        <div class="cp-stats">
+            <div class="cp-stat-card">
+                <div class="cp-stat-icon" style="background:rgba(37,99,235,.1);color:#2563eb;">
+                    <i class='bx bx-package'></i>
+                </div>
+                <div>
+                    <div class="cp-stat-label">Total Pesanan</div>
+                    <div class="cp-stat-value">{total_pesanan}</div>
+                </div>
+            </div>
+            <div class="cp-stat-card">
+                <div class="cp-stat-icon" style="background:rgba(234,179,8,.1);color:#ca8a04;">
+                    <i class='bx bx-loader-alt'></i>
+                </div>
+                <div>
+                    <div class="cp-stat-label">Sedang Diproses</div>
+                    <div class="cp-stat-value">{total_proses}</div>
+                </div>
+            </div>
+            <div class="cp-stat-card">
+                <div class="cp-stat-icon" style="background:rgba(34,197,94,.1);color:#16a34a;">
+                    <i class='bx bx-check-circle'></i>
+                </div>
+                <div>
+                    <div class="cp-stat-label">Selesai</div>
+                    <div class="cp-stat-value">{total_selesai}</div>
+                </div>
+            </div>
+            <div class="cp-stat-card">
+                <div class="cp-stat-icon" style="background:rgba(168,85,247,.1);color:#9333ea;">
+                    <i class='bx bx-money'></i>
+                </div>
+                <div>
+                    <div class="cp-stat-label">Total Transaksi</div>
+                    <div class="cp-stat-value" style="font-size:1.1rem;">Rp {total_bayar:,}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """)
+
+    # Daftar pesanan
+    if not semua_pesanan:
+        st.html("""
+        <div class="cp-body">
+            <div class="cp-empty">
+                <div class="cp-empty-icon"><i class='bx bx-package'></i></div>
+                <h3>Belum Ada Pesanan</h3>
+                <p>Anda belum memiliki riwayat pesanan laundry. Mulai percakapan dengan chatbot kami untuk memesan sekarang!</p>
+                <a href="?go=chat" target="_self" class="cp-empty-btn">
+                    <i class='bx bx-message-rounded-dots'></i> Mulai Pesan Sekarang
+                </a>
+            </div>
+        </div>
+        """)
+    else:
+        cards_html = '<div class="cp-body"><div class="cp-section-title"><i class="bx bx-receipt" style="color:#2563eb;font-size:1.3rem;"></i> Daftar Pesanan</div>'
+        for p in semua_pesanan:
+            jenis = p['Jenis']
+            icon_bg = "rgba(37,99,235,.1)" if jenis == 'Pakaian' else "rgba(168,85,247,.1)"
+            icon_color = "#2563eb" if jenis == 'Pakaian' else "#9333ea"
+            icon_cls = "bx-shopping-bag" if jenis == 'Pakaian' else "bx-run"
+
+            # Badge status pesanan
+            if p['Status'] == 'Selesai':
+                badge_status = "<span class='cp-badge cp-badge-done'><i class='bx bx-check-circle'></i> Selesai</span>"
+            else:
+                badge_status = "<span class='cp-badge cp-badge-process'><span class='cp-dot-anim'></span> Sedang Dicuci</span>"
+
+            # Badge status pembayaran
+            status_bayar = p.get('StatusPembayaran', 'Belum Dibayar')
+            metode_bayar = p.get('MetodePembayaran', '-')
+            if status_bayar == 'Sudah Dibayar':
+                badge_bayar = f"<span class='cp-badge cp-badge-paid'><i class='bx bx-credit-card'></i> Sudah Dibayar</span>"
+            else:
+                badge_bayar = f"<span class='cp-badge cp-badge-unpaid'><i class='bx bx-time-five'></i> Belum Dibayar</span>"
+
+            # Format waktu
+            waktu_raw = p['Waktu']
+            try:
+                from datetime import datetime as _dt
+                waktu_fmt = _dt.strptime(waktu_raw, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y, %H:%M')
+            except:
+                waktu_fmt = waktu_raw
+
+            cards_html += f"""
+            <div class="cp-order-card">
+                <div class="cp-order-icon" style="background:{icon_bg};color:{icon_color};">
+                    <i class='bx {icon_cls}'></i>
+                </div>
+                <div class="cp-order-info">
+                    <div class="cp-order-id">{p['ID']}</div>
+                    <div class="cp-order-detail">
+                        🧺 {p['Jenis']} &nbsp;·&nbsp; ⚡ {p['Layanan']}<br>
+                        💳 {metode_bayar} &nbsp;·&nbsp; 🕐 {waktu_fmt}
+                    </div>
+                </div>
+                <div class="cp-order-meta">
+                    <div class="cp-order-total">Rp {p['Total']:,}</div>
+                    <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px;">
+                        {badge_status}
+                        {badge_bayar}
+                    </div>
+                </div>
+            </div>"""
+
+        cards_html += '<div class="cp-footer-note">💡 Status pesanan diperbarui otomatis berdasarkan estimasi waktu pengerjaan.</div></div>'
+        st.html(cards_html)
+
+
+# ══════════════════════════════════════════════════════
 # ROUTER
 # ══════════════════════════════════════════════════════
 if st.session_state.page == 'landing':
     show_landing_page()
+elif st.session_state.page == 'cek_pesanan':
+    show_cek_pesanan_page()
 else:
     show_chatbot_page()
