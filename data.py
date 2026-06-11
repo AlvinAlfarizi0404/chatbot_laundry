@@ -1,6 +1,9 @@
 # data.py
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+def get_wib_now():
+    return datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=7)
 # Data Harga Laundry Pakaian
 # Format: { 'Item': { 'Layanan': Harga } }
 HARGA_PAKAIAN = {
@@ -135,7 +138,7 @@ def add_member(member_id, nama, whatsapp, alamat):
 def add_keluhan(id_keluhan, kategori, id_pesanan, isi_keluhan):
     conn = get_db_connection()
     c = conn.cursor()
-    waktu = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    waktu = get_wib_now().strftime('%Y-%m-%d %H:%M:%S')
     c.execute('INSERT INTO keluhan (id_keluhan, kategori, id_pesanan, isi_keluhan, waktu) VALUES (?, ?, ?, ?, ?)',
               (id_keluhan, kategori, id_pesanan, isi_keluhan, waktu))
     conn.commit()
@@ -144,7 +147,7 @@ def add_keluhan(id_keluhan, kategori, id_pesanan, isi_keluhan):
 def add_pesanan(id_pesanan, layanan, jenis, total, estimasi_jam, metode_pembayaran='Tidak Diketahui'):
     conn = get_db_connection()
     c = conn.cursor()
-    waktu_pesan = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    waktu_pesan = get_wib_now().strftime('%Y-%m-%d %H:%M:%S')
     status = 'Sedang Dicuci'
     # QRIS = langsung lunas, metode lain = belum dibayar
     status_pembayaran = 'Sudah Dibayar' if metode_pembayaran == 'Qris' else 'Belum Dibayar'
@@ -168,7 +171,7 @@ def get_all_pesanan():
         if pesanan['status'] != 'Selesai':
             waktu_pesan = datetime.strptime(pesanan['waktu_pesan'], '%Y-%m-%d %H:%M:%S')
             estimasi_selesai = waktu_pesan + timedelta(hours=pesanan['estimasi_jam'])
-            if datetime.now() >= estimasi_selesai:
+            if get_wib_now() >= estimasi_selesai:
                 c.execute('UPDATE pesanan SET status = ? WHERE id_pesanan = ?', ('Selesai', pesanan['id_pesanan']))
                 conn.commit()
                 pesanan['status'] = 'Selesai'
@@ -203,7 +206,7 @@ def get_pesanan(id_pesanan):
         waktu_pesan = datetime.strptime(pesanan['waktu_pesan'], '%Y-%m-%d %H:%M:%S')
         estimasi_selesai = waktu_pesan + timedelta(hours=pesanan['estimasi_jam'])
         
-        if datetime.now() >= estimasi_selesai:
+        if get_wib_now() >= estimasi_selesai:
             c.execute('UPDATE pesanan SET status = ? WHERE id_pesanan = ?', ('Selesai', id_pesanan))
             conn.commit()
             pesanan['status'] = 'Selesai'
